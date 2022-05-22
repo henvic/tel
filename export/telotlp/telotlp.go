@@ -48,12 +48,12 @@ func NewMetricHTTPClient(opts ...MetricHTTPOption) MetricClient {
 }
 
 // NewMetricHTTP constructs a new Exporter and starts it.
-func NewMetricHTTP(ctx context.Context, opts ...MetricHTTPOption) (*otlpmetric.Exporter, error) {
+func NewMetricHTTP(ctx context.Context, opts ...MetricHTTPOption) (*MetricExporter, error) {
 	return otlpmetrichttp.New(ctx, opts...)
 }
 
 // NewMetricHTTPUnstarted constructs a new Exporter and does not start it.
-func NewMetricHTTPUnstarted(opts ...MetricHTTPOption) *otlpmetric.Exporter {
+func NewMetricHTTPUnstarted(opts ...MetricHTTPOption) *MetricExporter {
 	return otlpmetrichttp.NewUnstarted(opts...)
 }
 
@@ -156,12 +156,12 @@ func NewOTLPGRPCMetricClient(opts ...GRPCOption) MetricClient {
 }
 
 // NewOTLPGRPCMetric constructs a new Exporter and starts it.
-func NewOTLPGRPCMetric(ctx context.Context, opts ...GRPCOption) (*otlpmetric.Exporter, error) {
+func NewOTLPGRPCMetric(ctx context.Context, opts ...GRPCOption) (*MetricExporter, error) {
 	return otlpmetric.New(ctx, NewOTLPGRPCMetricClient(opts...))
 }
 
 // NewOTLPGPRCetricUnstarted constructs a new Exporter and does not start it.
-func NewOTLPGRPCMetricUnstarted(opts ...GRPCOption) *otlpmetric.Exporter {
+func NewOTLPGRPCMetricUnstarted(opts ...GRPCOption) *MetricExporter {
 	return otlpmetric.NewUnstarted(NewOTLPGRPCMetricClient(opts...))
 }
 

@@ -66,7 +66,7 @@ func WithInstrumentDescription(desc string) InstrumentOption {
 }
 
 // WithInstrumentUnit applies provided unit.
-func WithInstrumentUnit(unit unit.Unit) InstrumentOption {
+func WithInstrumentUnit(unit MetricUnit) InstrumentOption {
 	return instrument.WithUnit(unit)
 }
 
@@ -136,17 +136,17 @@ type SyncInt64Histogram = syncint64.Histogram
 // empty, then a implementation defined default name will be used instead.
 //
 // This is short for MeterProvider().Meter(name).
-func GlobalMeter(instrumentationName string, opts ...metric.MeterOption) metric.Meter {
+func GlobalMeter(instrumentationName string, opts ...MeterOption) Meter {
 	return global.Meter(instrumentationName, opts...)
 }
 
 // MeterProvider returns the registered global trace provider.
 // If none is registered then a No-op MeterProvider is returned.
-func GlobalMeterProvider() metric.MeterProvider {
+func GlobalMeterProvider() MeterProvider {
 	return global.MeterProvider()
 }
 
 // SetGlobalMeterProvider registers `mp` as the global meter provider.
-func SetGlobalMeterProvider(mp metric.MeterProvider) {
+func SetGlobalMeterProvider(mp MeterProvider) {
 	global.SetMeterProvider(mp)
 }

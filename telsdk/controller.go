@@ -3,10 +3,8 @@ package telsdk
 import (
 	"time"
 
-	"go.opentelemetry.io/otel/attribute"
+	"github.com/henvic/tel"
 	"go.opentelemetry.io/otel/metric"
-	"go.opentelemetry.io/otel/metric/unit"
-	"go.opentelemetry.io/otel/sdk/metric/aggregator/histogram"
 	"go.opentelemetry.io/otel/sdk/metric/controller/basic"
 	ctime "go.opentelemetry.io/otel/sdk/metric/controller/time"
 	"go.opentelemetry.io/otel/sdk/metric/export"
@@ -17,7 +15,6 @@ import (
 	"go.opentelemetry.io/otel/sdk/metric/registry"
 	"go.opentelemetry.io/otel/sdk/metric/sdkapi"
 	"go.opentelemetry.io/otel/sdk/metric/selector/simple"
-	"go.opentelemetry.io/otel/sdk/resource"
 )
 
 // BasicControllerOption is the interface that applies the value to a configuration option.
@@ -25,7 +22,7 @@ type BasicControllerOption = basic.Option
 
 // WithBasicControllerResource sets the Resource configuration option of a Config by merging it
 // with the Resource configuration in the environment.
-func WithBasicControllerResource(r *resource.Resource) BasicControllerOption {
+func WithBasicControllerResource(r *Resource) BasicControllerOption {
 	return basic.WithResource(r)
 }
 
@@ -79,7 +76,7 @@ type BasicController = basic.Controller
 // NewBasicController constructs a Controller using the provided checkpointer factory
 // and options (including optional exporter) to configure a metric
 // export pipeline.
-func NewBasicController(checkpointerFactory export.CheckpointerFactory, opts ...BasicControllerOption) *BasicController {
+func NewBasicController(checkpointerFactory CheckpointerFactory, opts ...BasicControllerOption) *BasicController {
 	return basic.New(checkpointerFactory, opts...)
 }
 
@@ -166,14 +163,14 @@ type Record = export.Record
 // Accumulations to send to Processors. The Descriptor, attributes, and
 // Aggregator represent aggregate metric events received over a single
 // collection period.
-func NewMetricExportAccumulation(descriptor *sdkapi.Descriptor, attrs *attribute.Set, agg Aggregator) Accumulation {
+func NewMetricExportAccumulation(descriptor *APIDescriptor, attrs *tel.Set, agg Aggregator) Accumulation {
 	return export.NewAccumulation(descriptor, attrs, agg)
 }
 
 // NewRecord allows Processor implementations to construct export records.
 // The Descriptor, attributes, and Aggregator represent aggregate metric
 // events received over a single collection period.
-func NewRecord(descriptor *sdkapi.Descriptor, attrs *attribute.Set, agg aggregation.Aggregation, start, end time.Time) Record {
+func NewRecord(descriptor *APIDescriptor, attrs *tel.Set, agg MetricExportAggregation, start, end time.Time) Record {
 	return export.NewRecord(descriptor, attrs, agg, start, end)
 }
 
@@ -290,12 +287,12 @@ var ErrInvalidTemporality = basicProcessor.ErrInvalidTemporality
 // is consulted to determine the kind(s) of exporter that will consume
 // data, so that this Processor can prepare to compute Cumulative Aggregations
 // as needed.
-func New(aselector export.AggregatorSelector, tselector aggregation.TemporalitySelector, opts ...BasicProcessorOption) *Processor {
+func New(aselector AggregatorSelector, tselector aggregation.TemporalitySelector, opts ...BasicProcessorOption) *Processor {
 	return basicProcessor.New(aselector, tselector, opts...)
 }
 
 // NewFactory returns a new basic CheckpointerFactory.
-func NewFactory(aselector export.AggregatorSelector, tselector aggregation.TemporalitySelector, opts ...BasicProcessorOption) export.CheckpointerFactory {
+func NewFactory(aselector AggregatorSelector, tselector aggregation.TemporalitySelector, opts ...BasicProcessorOption) export.CheckpointerFactory {
 	return basicProcessor.NewFactory(aselector, tselector, opts...)
 }
 
@@ -353,7 +350,7 @@ func Compatible(candidate, existing sdkapi.Descriptor) bool {
 type APIDescriptor = sdkapi.Descriptor
 
 // NewAPIDescriptor returns a Descriptor with the given contents.
-func NewAPIDescriptor(name string, ikind InstrumentKind, nkind MetricNumber, description string, u unit.Unit) APIDescriptor {
+func NewAPIDescriptor(name string, ikind InstrumentKind, nkind MetricNumber, description string, u tel.MetricUnit) APIDescriptor {
 	return sdkapi.NewDescriptor(name, ikind, nkind, description, u)
 }
 
@@ -440,7 +437,7 @@ func NewObservation(inst AsyncImpl, n Number) Observation {
 type Observation = sdkapi.Observation
 
 // WrapMeterImpl wraps impl to be a full implementation of a Meter.
-func WrapMeterImpl(impl MeterImpl) metric.Meter {
+func WrapMeterImpl(impl MeterImpl) tel.Meter {
 	return sdkapi.WrapMeterImpl(impl)
 }
 
@@ -454,13 +451,13 @@ func UnwrapMeterImpl(m metric.Meter) MeterImpl {
 // instruments.  This selector is faster and uses less memory than the
 // others in this package because minmaxsumcount aggregators maintain
 // the least information about the distribution among these choices.
-func NewWithInexpensiveDistribution() export.AggregatorSelector {
+func NewWithInexpensiveDistribution() AggregatorSelector {
 	return simple.NewWithInexpensiveDistribution()
 }
 
 // NewWithHistogramDistribution returns a simple aggregator selector
 // that uses histogram aggregators for `Histogram` instruments.
 // This selector is a good default choice for most metric exporters.
-func NewWithHistogramDistribution(options ...histogram.Option) export.AggregatorSelector {
+func NewWithHistogramDistribution(options ...HistogramOption) AggregatorSelector {
 	return simple.NewWithHistogramDistribution(options...)
 }

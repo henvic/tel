@@ -9,7 +9,6 @@ import (
 	"go.opentelemetry.io/otel/sdk/metric/aggregator/lastvalue"
 	"go.opentelemetry.io/otel/sdk/metric/aggregator/sum"
 	"go.opentelemetry.io/otel/sdk/metric/number"
-	"go.opentelemetry.io/otel/sdk/metric/sdkapi"
 )
 
 // Aggregator implements a specific aggregation behavior, e.g., a
@@ -35,7 +34,7 @@ func NewInconsistentAggregatorError(a1, a2 Aggregator) error {
 // This rejects NaN values.  This rejects negative values when the
 // metric instrument does not support negative values, including
 // monotonic counter metrics and absolute Histogram metrics.
-func AggregatorRangeTest(num number.Number, descriptor *sdkapi.Descriptor) error {
+func AggregatorRangeTest(num number.Number, descriptor *APIDescriptor) error {
 	return aggregator.RangeTest(num, descriptor)
 }
 
@@ -100,7 +99,7 @@ const (
 )
 
 // NewExponentMapping constructs an exponential mapping function, used for scales <= 0.
-func NewExponentMapping(scale int32) (mapping.Mapping, error) {
+func NewExponentMapping(scale int32) (Mapping, error) {
 	return exponent.NewMapping(scale)
 }
 
@@ -133,7 +132,7 @@ const (
 )
 
 // NewLogarithmMapping constructs a logarithm mapping function, used for scales > 0.
-func NewLogarithmMapping(scale int32) (mapping.Mapping, error) {
+func NewLogarithmMapping(scale int32) (Mapping, error) {
 	return logarithm.NewMapping(scale)
 }
 
@@ -159,7 +158,7 @@ func HistogramWithExplicitBoundaries(explicitBoundaries []float64) HistogramOpti
 // Note that this aggregator maintains each value using independent
 // atomic operations, which introduces the possibility that
 // checkpoints are inconsistent.
-func NewHistogram(cnt int, desc *sdkapi.Descriptor, opts ...HistogramOption) []HistogramAggregator {
+func NewHistogram(cnt int, desc *APIDescriptor, opts ...HistogramOption) []HistogramAggregator {
 	return histogram.New(cnt, desc, opts...)
 }
 

@@ -1,8 +1,8 @@
 package telexporter
 
 import (
+	"github.com/henvic/tel/telsdk"
 	"go.opentelemetry.io/otel/exporters/prometheus"
-	controller "go.opentelemetry.io/otel/sdk/metric/controller/basic"
 )
 
 // PrometheusExporter supports Prometheus pulls.  It does not implement the
@@ -19,6 +19,6 @@ type PrometheusConfig = prometheus.Config
 
 // NewPrometheus returns a new Prometheus exporter using the configured metric
 // controller.  See controller.New().
-func NewPrometheus(config PrometheusConfig, ctrl *controller.Controller) (*PrometheusExporter, error) {
+func NewPrometheus(config PrometheusConfig, ctrl *telsdk.BasicController) (*PrometheusExporter, error) {
 	return prometheus.New(config, ctrl)
 }

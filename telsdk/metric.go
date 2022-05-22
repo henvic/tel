@@ -2,7 +2,6 @@ package telsdk
 
 import (
 	"go.opentelemetry.io/otel/sdk/metric"
-	"go.opentelemetry.io/otel/sdk/metric/export"
 )
 
 // MetricAccumulator implements the OpenTelemetry Meter API.  The
@@ -32,6 +31,6 @@ var ErrBadInstrument = metric.ErrBadInstrument
 // processor will call Collect() when it receives a request to scrape
 // current metric values.  A push-based processor should configure its
 // own periodic collection.
-func NewMetricAccumulator(processor export.Processor) *MetricAccumulator {
+func NewMetricAccumulator(processor MetricExportProcessor) *MetricAccumulator {
 	return metric.NewAccumulator(processor)
 }

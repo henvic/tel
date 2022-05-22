@@ -45,7 +45,7 @@ type AttributeMergeIterator = attribute.MergeIterator
 
 // AttributeNewMergeIterator returns a MergeIterator for merging two attribute sets.
 // Duplicates are resolved by taking the value from the first set.
-func AttributeNewMergeIterator(s1, s2 *attribute.Set) AttributeMergeIterator {
+func AttributeNewMergeIterator(s1, s2 *Set) AttributeMergeIterator {
 	return attribute.NewMergeIterator(s1, s2)
 }
 
